@@ -1,0 +1,17 @@
+{
+  "name": "client-next-postman",
+  "version": "1.0.0",
+  "description": "a project to test a CRUD application with Postman",
+  "main": "",
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down"
+  },
+  "keywords": [
+    "docker",
+    "postman",
+    "newman"
+  ],
+  "author": "Scottie Crump",
+  "license": "ISC"
+}

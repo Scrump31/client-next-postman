@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  api:
+    image: scottiecrump/client-address-next
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    depends_on:
+      - mongo
+    ports:
+      - 3000:3000
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+volumes:
+  mongo-data:
+    driver: local
+  mongo-config:
+    driver: local
