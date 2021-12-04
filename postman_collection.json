@@ -1,0 +1,402 @@
+{
+	"info": {
+		"_postman_id": "22d52145-d76a-4951-8d72-559195ea68f0",
+		"name": "ClientAddressBook",
+		"description": "MongoDB for Client Address Book built with Next.js",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add New Client",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomPhone = Math.floor(Math.random() * 1000000000)",
+							"const randomFullName = pm.variables.replaceIn('{{$randomFullName}}');",
+							"",
+							"pm.environment.set(\"randomPhone\", randomPhone);",
+							"pm.environment.set(\"randomFullName\", randomFullName);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"given POST request, returns 200 status\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"given new client, returns client added message\", () => {",
+							"    const response = pm.response.json();",
+							"    const name = pm.environment.get(\"randomFullName\");",
+							"",
+							"    pm.expect(response.message).to.eql(`${name} successfully added`);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"message\"",
+							"  ]",
+							"}",
+							"",
+							"pm.test(\"given valid POST request, response matches schema\", () => {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{randomFullName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"phone\": \"{{randomPhone}}\",\n    \"address\": \"{{$randomStreetAddress}}\",\n    \"company\": \"{{$randomCompanyName}}\",\n    \"notes\": \"{{$randomLoremText}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/add-client",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"add-client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json()",
+							"const lastAddedClientID = response.users[response.users.length - 1].id;",
+							"",
+							"pm.environment.set(\"lastAddedClientID\", lastAddedClientID);",
+							"",
+							"pm.test(\"given GET request, returns 200 status\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"type\": \"object\",",
+							"  \"required\": [",
+							"    \"users\"",
+							"  ],",
+							"  \"properties\": {",
+							"    \"users\": {",
+							"      \"type\": \"array\",",
+							"      \"items\": {",
+							"        \"type\": \"object\",",
+							"        \"required\": [",
+							"          \"_id\",",
+							"          \"name\",",
+							"          \"email\",",
+							"          \"__v\",",
+							"          \"id\"",
+							"        ],",
+							"        \"properties\": {",
+							"          \"_id\": {",
+							"            \"type\": \"string\"",
+							"          },",
+							"          \"name\": {",
+							"            \"type\": \"string\"",
+							"          },",
+							"          \"email\": {",
+							"            \"type\": \"string\"",
+							"          },",
+							"          \"address\": {",
+							"            \"type\": \"string\"",
+							"          },",
+							"          \"phone\": {",
+							"            \"type\": \"integer\"",
+							"          },",
+							"          \"company\": {",
+							"            \"type\": \"string\"",
+							"          },",
+							"          \"notes\": {",
+							"            \"type\": \"string\"",
+							"          },",
+							"          \"__v\": {",
+							"            \"type\": \"integer\"",
+							"          },",
+							"          \"id\": {",
+							"            \"type\": \"string\"",
+							"          }",
+							"        }",
+							"      }",
+							"    }",
+							"  }",
+							"}",
+							"pm.test(\"given GET request, response matches schema\", () => {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/clients",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"given GET request, returns 200 status\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"user\": {",
+							"      \"type\": \"object\",",
+							"      \"properties\": {",
+							"        \"_id\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"name\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"email\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"address\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"phone\": {",
+							"          \"type\": \"integer\"",
+							"        },",
+							"        \"company\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"notes\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"__v\": {",
+							"          \"type\": \"integer\"",
+							"        },",
+							"        \"id\": {",
+							"          \"type\": \"string\"",
+							"        }",
+							"      },",
+							"      \"required\": [",
+							"        \"_id\",",
+							"        \"name\",",
+							"        \"email\",",
+							"        \"__v\",",
+							"        \"id\"",
+							"      ]",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"user\"",
+							"  ]",
+							"}",
+							"",
+							"pm.test(\"given GET request, response matches schema\", () => {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/get-client?id={{lastAddedClientID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"get-client"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{lastAddedClientID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"given valid POST request, returns 201 status\", () => {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"given POST client, returns client updated message\", () => {",
+							"    const response = pm.response.json();",
+							"    const name = pm.environment.get(\"randomFullName\");",
+							"",
+							"    pm.expect(response.message).to.eql(`${name} successfully updated`);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"message\"",
+							"  ]",
+							"}",
+							"",
+							"pm.test(\"given valid POST request, response matches schema\", () => {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{lastAddedClientID}}\",\n    \"name\": \"{{randomFullName}}\",\n    \"notes\": \"Updated Notes\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/update-client",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"update-client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"given valid DELETE request, returns 200 status\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"given deleted client, returns client deleted message\", () => {",
+							"    const response = pm.response.json();",
+							"    const name = pm.environment.get(\"randomFullName\");",
+							"",
+							"    pm.expect(response.message).to.eql(`${name} successfully deleted`);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"message\"",
+							"  ]",
+							"}",
+							"",
+							"pm.test(\"given valid DELETE request, response matches schema\", () => {",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"{{lastAddedClientID}}\",\n    \"name\": \"{{randomFullName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/delete-client",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"delete-client"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

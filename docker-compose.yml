@@ -9,6 +9,7 @@ services:
       - mongo
     ports:
       - 3000:3000
+    restart: always
   mongo:
     image: mongo
     ports:
@@ -16,6 +17,7 @@ services:
     volumes:
       - mongo-data:/data/db
       - mongo-config:/data/configdb
+    restart: always
 volumes:
   mongo-data:
     driver: local
