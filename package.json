@@ -6,7 +6,7 @@
   "scripts": {
     "start": "docker-compose up -d",
     "stop": "docker-compose down",
-    "test": "newman run postman_collection.json -e postman_environment.json --reporters htmlextra"
+    "test": "newman run postman_collection.json -e postman_environment.json --reporters=cli,htmlextra"
   },
   "keywords": [
     "docker",
@@ -14,8 +14,5 @@
     "newman"
   ],
   "author": "Scottie Crump",
-  "license": "ISC",
-  "dependencies": {
-    "newman-reporter-htmlextra": "^1.22.3"
-  }
+  "license": "ISC"
 }
