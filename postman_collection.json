@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "22d52145-d76a-4951-8d72-559195ea68f0",
 		"name": "ClientAddressBook",
-		"description": "MongoDB for Client Address Book built with Next.js",
+		"description": "# Overview\n\nThe Client Address Book API allows users to execute CRUD actions and persist data to a MongoDB database.\n\n# Getting Started\n\nTo access the API, navigate to [scottiecrump/client-address-next](https://hub.docker.com/r/scottiecrump/client-address-next) and follow the provided instructions to run the API in a Docker container.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,8 +16,9 @@
 							"const randomPhone = Math.floor(Math.random() * 1000000000)",
 							"const randomFullName = pm.variables.replaceIn('{{$randomFullName}}');",
 							"",
-							"pm.environment.set(\"randomPhone\", randomPhone);",
-							"pm.environment.set(\"randomFullName\", randomFullName);"
+							"pm.collectionVariables.set(\"randomPhone\", randomPhone);",
+							"pm.collectionVariables.set(\"randomFullName\", randomFullName);",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -32,7 +33,7 @@
 							"",
 							"pm.test(\"given new client, returns client added message\", () => {",
 							"    const response = pm.response.json();",
-							"    const name = pm.environment.get(\"randomFullName\");",
+							"    const name = pm.collectionVariables.get(\"randomFullName\");",
 							"",
 							"    pm.expect(response.message).to.eql(`${name} successfully added`);",
 							"});",
@@ -63,7 +64,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"{{randomFullName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"phone\": \"{{randomPhone}}\",\n    \"address\": \"{{$randomStreetAddress}}\",\n    \"company\": \"{{$randomCompanyName}}\",\n    \"notes\": \"{{$randomLoremText}}\"\n}",
+					"raw": "{\n    \"name\": \"{{randomFullName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"phone\": \"{{randomPhone}}\",\n    \"address\": \"{{$randomStreetAddress}}\",\n    \"company\": \"{{$randomCompanyName}}\",\n    \"notes\": \"{{$randomLoremSentence}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -79,9 +80,72 @@
 						"api",
 						"add-client"
 					]
-				}
+				},
+				"description": "Creates a new client. The `name` value must be unique. The `name` and `email` properties are required. The `phone` property is designed to accept integers only. So, for example, phone number formats such as `(111) 222-3333` will not work.\n\n``` json\n{\n  \"name\": \"string\",\n  \"email\": \"string\",\n  \"phone\": number,\n  \"address\": \"string\",\n  \"company\": \"string\",\n  \"notes\": \"string\"\n}\n\n```"
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Add New Client",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"jd@mail.com\",\n    \"phone\": 1234567890,\n    \"address\": \"123 Test Street\",\n    \"company\": \"Testers R Us\",\n    \"notes\": \"I love Postman\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/add-client",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"add-client"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "ETag",
+							"value": "\"29-lLsQjYtpKSO+FWjIJRipb3+YZzE\""
+						},
+						{
+							"key": "Content-Length",
+							"value": "41"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 08 Dec 2021 16:37:56 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"John Doe successfully added\"\n}"
+				}
+			]
 		},
 		{
 			"name": "Get Clients",
@@ -93,7 +157,7 @@
 							"const response = pm.response.json()",
 							"const lastAddedClientID = response.users[response.users.length - 1].id;",
 							"",
-							"pm.environment.set(\"lastAddedClientID\", lastAddedClientID);",
+							"pm.collectionVariables.set(\"lastAddedClientID\", lastAddedClientID);",
 							"",
 							"pm.test(\"given GET request, returns 200 status\", () => {",
 							"    pm.response.to.have.status(200);",
@@ -170,9 +234,34 @@
 						"api",
 						"clients"
 					]
-				}
+				},
+				"description": "Retrieves an array of all current clients."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/clients",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"clients"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"users\": [\n        {\n            \"_id\": \"61aa26f711778415b375e07b\",\n            \"name\": \"Kadeem Dorsey\",\n            \"email\": \"delapeq@mailinator.com\",\n            \"address\": \"123 Phillip Carson Street\",\n            \"phone\": 11234567890,\n            \"company\": \"Hendrix Nguyen Plc\",\n            \"notes\": \"Eveniet cumque volu\",\n            \"__v\": 0,\n            \"id\": \"61aa26f711778415b375e07b\"\n        }\n    ]\n}"
+				}
+			]
 		},
 		{
 			"name": "Get Client",
@@ -260,9 +349,69 @@
 							"value": "{{lastAddedClientID}}"
 						}
 					]
-				}
+				},
+				"description": "Returns a single client."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/get-client?id=61aae9545e547d5199434e8c",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"get-client"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "61aae9545e547d5199434e8c"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "ETag",
+							"value": "\"e6-VRi5vRAjTXU1+DOzgwMOW8KYAz4\""
+						},
+						{
+							"key": "Content-Length",
+							"value": "230"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 08 Dec 2021 16:17:51 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"user\": {\n        \"_id\": \"61aae9545e547d5199434e8c\",\n        \"name\": \"Terry White\",\n        \"email\": \"Zachary59@hotmail.com\",\n        \"address\": \"4714 Jacobs Light\",\n        \"phone\": 532088077,\n        \"company\": \"Waters - Thiel\",\n        \"notes\": \"possimus\",\n        \"__v\": 0,\n        \"id\": \"61aae9545e547d5199434e8c\"\n    }\n}"
+				}
+			]
 		},
 		{
 			"name": "Update Client",
@@ -277,7 +426,7 @@
 							"",
 							"pm.test(\"given POST client, returns client updated message\", () => {",
 							"    const response = pm.response.json();",
-							"    const name = pm.environment.get(\"randomFullName\");",
+							"    const name = pm.collectionVariables.get(\"randomFullName\");",
 							"",
 							"    pm.expect(response.message).to.eql(`${name} successfully updated`);",
 							"});",
@@ -324,9 +473,72 @@
 						"api",
 						"update-client"
 					]
-				}
+				},
+				"description": "Update details for an existing client. Note: the `name` value is simply used in the response message. If you do not pass in a `name` the response will be `\"undefined was successfully updated\"`\n\n``` json\n{\n \"id\": \"string\",\n \"name\": \"string\",\n}\n\n```"
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"61aae9545e547d5199434e8c\",\n    \"name\": \"Maureen Kunze\",\n    \"notes\": \"Updated Notes\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/update-client",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"update-client"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "ETag",
+							"value": "\"30-WFSMtqZXj8vbHnnk+Iawb6Q3hic\""
+						},
+						{
+							"key": "Content-Length",
+							"value": "48"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 08 Dec 2021 16:25:01 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Maureen Kunze successfully updated\"\n}"
+				}
+			]
 		},
 		{
 			"name": "Delete Client",
@@ -341,7 +553,7 @@
 							"",
 							"pm.test(\"given deleted client, returns client deleted message\", () => {",
 							"    const response = pm.response.json();",
-							"    const name = pm.environment.get(\"randomFullName\");",
+							"    const name = pm.collectionVariables.get(\"randomFullName\");",
 							"",
 							"    pm.expect(response.message).to.eql(`${name} successfully deleted`);",
 							"});",
@@ -394,9 +606,92 @@
 						"api",
 						"delete-client"
 					]
-				}
+				},
+				"description": "Remove an existing client. Note: the `name` value is simply used in the response message. If you do not pass in a `name` the response will be `\"undefined was successfully deleted\"`\n\n``` json\n{\n\"id\": \"string\",\n  \"name\": \"string\"\n}\n\n```"
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Delete Client",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"61aae9545e547d5199434e8c\",\n    \"name\": \"Maureen Kunze\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/delete-client",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"delete-client"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "ETag",
+							"value": "\"30-LTAYUMlvBqocymZ9qXpT+qYbWR8\""
+						},
+						{
+							"key": "Content-Length",
+							"value": "48"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 08 Dec 2021 16:25:32 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Maureen Kunze successfully deleted\"\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "randomPhone",
+			"value": ""
+		},
+		{
+			"key": "randomFullName",
+			"value": ""
+		},
+		{
+			"key": "lastAddedClientID",
+			"value": ""
 		}
 	]
 }
